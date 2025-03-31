@@ -44,12 +44,8 @@ vector<string> solution(vector<string> record) {
     while (!q.empty()) {
         pair<string, string> info = q.front();
         q.pop();
-
-        if (info.first == "Enter") {
-            answer.push_back(nickname[info.second] + "님이 들어왔습니다.");
-        } else {
-            answer.push_back(nickname[info.second] + "님이 나갔습니다.");
-        }
+        string word = info.first == "Enter" ? "님이 들어왔습니다." : "님이 나갔습니다.";
+        answer.push_back(nickname[info.second] + word); 
     }
 
     return answer;
