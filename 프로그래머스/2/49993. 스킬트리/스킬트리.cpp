@@ -1,22 +1,37 @@
+#include <algorithm>
+#include <iostream>
 #include <string>
 #include <vector>
+
 using namespace std;
+
+int check[27];
 
 int solution(string skill, vector<string> skill_trees) {
     int answer = 0;
-    for (auto skill_tree : skill_trees) {
-        bool is_good = true ;
-        int skill_idx = 0;
-        for (auto user_skill : skill_tree) {
-            int cur_idx = skill.find(user_skill);// 스킬 트리에서 유저가 배운 스킬이 있는지 확인
-            if (cur_idx == -1) continue ;// 없다면 넘긴다
-            if (cur_idx != skill_idx) {// 있는데 순서에 맞게 찍지 않았다면
-                is_good = false;
-                break ;
-            }
-            skill_idx++;
-        }
-        if (is_good) answer++;
+
+    for (auto ch : skill) {
+        check[ch - 'A'] = 1;
     }
+
+    for (string skill_tree : skill_trees) {
+        string str = "";
+        bool flag = true;
+
+        for (auto ch : skill_tree) {
+            if (check[ch - 'A']) str += ch;
+        }
+
+        for (int i = 0; i < str.size(); i++) {
+            if(str[i] != skill[i]){
+                flag = false;
+                break;
+            }
+        }
+
+        if(flag) answer++;
+
+    }
+
     return answer;
 }
