@@ -1,25 +1,38 @@
-#include <bits/stdc++.h>
+#include <algorithm>
+#include <iostream>
+#include <string>
+#include <vector>
+
 using namespace std;
 
-const int MOD = 10007;
+int N, result;
+long long DP[1005][10];
 
-int main(){
-    ios::sync_with_stdio(false);
-    cin.tie(nullptr);
+int main() {
+    ios_base::sync_with_stdio(false), cin.tie(NULL), cout.tie(NULL);
 
-    int N;
     cin >> N;
-    // we need C(N+9, 9) mod 10007
-    int n = N + 9, k = 9;
-    // comb[i][j] = C(i, j) mod MOD, for 0 <= i <= n, 0 <= j <= k
-    vector<array<int,10>> comb(n+1);
-    for(int i = 0; i <= n; i++){
-        comb[i][0] = 1;
-        for(int j = 1; j <= min(i, k); j++){
-            comb[i][j] = (comb[i-1][j-1] + comb[i-1][j]) % MOD;
+
+    // 첫 번째 자리의 수가 i일 때
+    for (int i = 0; i < 10; i++) {
+        DP[1][i] = 1;
+    }
+
+    // 두 번째 자리 ~ N 번째 자리
+    for (int i = 2; i <= N; i++) {
+        // i 번째 자리의 수가 j일 때
+        for (int j = 0; j < 10; j++) {
+            for (int k = 0; k <= j; k++) {
+                DP[i][j] += DP[i - 1][k] % 10007;
+            }
         }
     }
 
-    cout << comb[n][k] << "\n";
+    for (int i = 0; i < 10; i++) {
+        result += DP[N][i] % 10007;
+    }
+
+    cout << result % 10007 << '\n';
+
     return 0;
 }
