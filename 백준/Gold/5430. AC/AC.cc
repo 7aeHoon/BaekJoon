@@ -51,29 +51,26 @@ int main() {
         // 결과 출력
         if (isError) {
             cout << "error" << '\n';
-        } else {
-            if (dq.empty()) {
-                cout << "[]" << '\n';
+            continue;
+        }
+
+        cout << "[";
+
+        while (!dq.empty()) {
+            if (isReverse) {
+                cout << dq.back();
+                dq.pop_back();
             } else {
-                cout << "[";
-                if (isReverse) {
-                    for (int j = dq.size() - 1; j >= 0; j--) {
-                        cout << dq[j];
-                        if (j > 0) {
-                            cout << ',';
-                        }
-                    }
-                } else {
-                    for (int j = 0; j < dq.size(); j++) {
-                        cout << dq[j];
-                        if (j < dq.size() - 1) {
-                            cout << ',';
-                        }
-                    }
-                }
-                cout << "]" << '\n';
+                cout << dq.front();
+                dq.pop_front();
+            }
+
+            if (!dq.empty()) {
+                cout << ',';
             }
         }
+
+        cout << "]" << '\n';
     }
 
     return 0;
