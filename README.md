@@ -14,8 +14,8 @@
 ## 📌 플랫폼  
 | Online Judge | Link |
 |-------------|------|
-| 🏆 **Baekjoon** | [🔗 바로가기](https://www.acmicpc.net/) |
-| 💡 **Programmers** | [🔗 바로가기](https://programmers.co.kr/) |
+| **Baekjoon** | [🔗 바로가기](https://www.acmicpc.net/) |
+| **Programmers** | [🔗 바로가기](https://programmers.co.kr/) |
 
 ---
 
