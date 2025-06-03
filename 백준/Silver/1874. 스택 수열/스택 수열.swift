@@ -1,91 +1,27 @@
 import Foundation
-final class FileIO {
-    private let buffer:[UInt8]
-    private var index: Int = 0
 
-    init(fileHandle: FileHandle = FileHandle.standardInput) {
-        
-        buffer = Array(try! fileHandle.readToEnd()!)+[UInt8(0)] // 인덱스 범위 넘어가는 것 방지
-    }
+let N = Int(readLine()!)!
+var stack = [Int]()
+var result = [String]()
+var lastNum = 1
 
-    @inline(__always) private func read() -> UInt8 {
-        defer { index += 1 }
 
-        return buffer[index]
-    }
-
-    @inline(__always) func readInt() -> Int {
-        var sum = 0
-        var now = read()
-        var isPositive = true
-
-        while now == 10
-                || now == 32 { now = read() } // 공백과 줄바꿈 무시
-        if now == 45 { isPositive.toggle(); now = read() } // 음수 처리
-        while now >= 48, now <= 57 {
-            sum = sum * 10 + Int(now-48)
-            now = read()
-        }
-
-        return sum * (isPositive ? 1:-1)
-    }
-
-    @inline(__always) func readString() -> String {
-        var now = read()
-
-        while now == 10 || now == 32 { now = read() } // 공백과 줄바꿈 무시
-
-        let beginIndex = index-1
-
-        while now != 10,
-              now != 32,
-              now != 0 { now = read() }
-
-        return String(bytes: Array(buffer[beginIndex..<(index-1)]), encoding: .ascii)!
-    }
-
-    @inline(__always) func readByteSequenceWithoutSpaceAndLineFeed() -> [UInt8] {
-        var now = read()
-
-        while now == 10 || now == 32 { now = read() } // 공백과 줄바꿈 무시
-
-        let beginIndex = index-1
-
-        while now != 10,
-              now != 32,
-              now != 0 { now = read() }
-
-        return Array(buffer[beginIndex..<(index-1)])
-    }
-}
-let fIO = FileIO()
-var arr: [Int] = []
-var stack: [Int] = []
-var result: [String] = []
-var current: Int = 1
-
-let N = fIO.readInt()
-
-for _ in 1...N {
-    let num = fIO.readInt()
+for _ in 0..<N {
+    let inputNum = Int(readLine()!)!
     
-    while current <= num {
-        stack.append(current)
+    while lastNum <= inputNum {
+        stack.append(lastNum)
         result.append("+")
-        current += 1
+        lastNum += 1
     }
     
-    if !stack.isEmpty && stack.last! == num {
+    if let top = stack.last, top == inputNum {
         stack.removeLast()
         result.append("-")
     } else {
         print("NO")
-        break
+        exit(0)
     }
 }
 
-if stack.isEmpty {
-    result.forEach {
-        print($0)
-    }
-}
+print(result.joined(separator: "\n"))
