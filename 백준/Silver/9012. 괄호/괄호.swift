@@ -59,30 +59,21 @@ final class FileIO {
     }
 }
 
-
 let fIO = FileIO()
 // 테스트 케이스
 let T = fIO.readInt()
 
 for _ in 0..<T {
     let str = fIO.readString()
-    var stack = [Character]()
+    var stack = 0
     var result = "YES"
     
     for ch in str {
-        if ch == "(" {
-            stack.append(ch)
-        } else {
-            if stack.isEmpty {
-                result = "NO"
-                break
-            } else {
-                stack.removeLast()
-            }
-        }
+        stack += (ch == "(" ? 1 : -1)
+        if stack < 0 { break }
     }
     
-    if !stack.isEmpty {
+    if stack != 0 {
         result = "NO"
     }
     
