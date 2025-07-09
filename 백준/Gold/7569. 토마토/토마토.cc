@@ -49,37 +49,28 @@ int main() {
         int z = get<0>(here);
         int y = get<1>(here);
         int x = get<2>(here);
+        day = max(day, tomato[z][y][x]);
 
         for (int i = 0; i < 6; i++) {
             int nz = z + dz[i];
             int ny = y + dy[i];
             int nx = x + dx[i];
             // 상자의 영역을 벗어난 경우
-            if (ny < 0 || ny >= N || nx < 0 || nx >= M || nz < 0 || nz >= H) {
-                continue;
-            }
+            if (ny < 0 || ny >= N || nx < 0 || nx >= M || nz < 0 || nz >= H) { continue; }
             // 주변에 익지 않은 토마토가 없을 경우
-            if (tomato[nz][ny][nx] != 0) {
-                continue;
-            }
+            if (tomato[nz][ny][nx] != 0) { continue; }
             q.push({nz, ny, nx});
-            tomato[nz][ny][nx] = tomato[z][y][x] + 1;   
+            tomato[nz][ny][nx] = tomato[z][y][x] + 1;
+            unripenTomato--;
         }
     }
 
-    for (int i = 0; i < H; i++) {
-        for (int j = 0; j < N; j++) {
-            for (int k = 0; k < M; k++) {
-                if (tomato[i][j][k] == 0) {
-                    cout << -1 << '\n';
-                    return 0;
-                }
-                day = max(day, tomato[i][j][k]);
-            }
-        }
+    // 익지 않은 토마토가 남았을 경우
+    if (unripenTomato != 0) { 
+        cout << -1 << '\n'; 
+    } else { 
+        cout << day - 1 << '\n'; 
     }
-
-    cout << day - 1 << endl; 
 
     return 0;
 }
