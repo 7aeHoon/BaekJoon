@@ -12,7 +12,7 @@ long long solution(int n, vector<int> works) {
     }
 
     for (int i = 0; i < n; i++) {
-        if(pq.empty() || pq.top() <= 0) { break; }
+        if(pq.empty() || pq.top() <= 0) { return 0; }
         int top = pq.top();
         pq.pop();
         pq.push(top - 1);
@@ -21,7 +21,7 @@ long long solution(int n, vector<int> works) {
     while (!pq.empty()) {
         int top = pq.top();
         pq.pop();
-        answer += (top * top);
+        answer += top * top;
     }
 
     return answer;
