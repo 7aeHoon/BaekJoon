@@ -1,6 +1,6 @@
 # 🚀 Algorithm Practice Repository  
 
-이 저장소는 **Baekjoon Online Judge**와 **Programmers**에서 푼 알고리즘 문제를 자동으로 기록하는 공간입니다.  
+이 저장소는 **Baekjoon**, **Programmers**, **SWEA**에서 푼 알고리즘 문제를 자동으로 기록하는 공간입니다.  
 꾸준한 문제 풀이를 통해 **알고리즘 실력을 향상**시키는 것이 목표입니다. 
 
 ---
@@ -16,7 +16,7 @@
 |-------------|------|
 | **Baekjoon** | [🔗 바로가기](https://www.acmicpc.net/) |
 | **Programmers** | [🔗 바로가기](https://programmers.co.kr/) |
-
+| **SWEA** | [🔗 바로가기](https://swexpertacademy.com/main/main.do/) |
 ---
 
 ## 🎯 목표 & 진행 방식  
