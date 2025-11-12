@@ -2,13 +2,13 @@
 
 using namespace std;
 
-int N, city, answer;
-int dist[100005];
-int price[100005];
-int pSum[100005];
-vector<pair<int, int>> v;
+long long N, city, answer;
+long long dist[100005];
+long long price[100005];
+long long pSum[100005];
+vector<pair<long long, long long>> v;
 
-bool compare(pair<int, int> l, pair<int, int> r) { return l.second < r.second; }
+bool compare(pair<long long, long long> l, pair<long long, long long> r) { return l.second < r.second; }
 
 int main() {
     ios::sync_with_stdio(false);
