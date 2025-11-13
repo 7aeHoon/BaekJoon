@@ -1,109 +1,66 @@
 #include <bits/stdc++.h>
-
 using namespace std;
 
 int T, N;
 char arr[21][21];
 
-// 왼쪽에서 오른쪽으로 아래 방향 대각선
-string getRightDiagonal(const int& y, const int& x) {
-    int ny = y;
-    int nx = x;
+bool hasFive(const string& s) {
+    return s.find("ooooo") != string::npos;
+}
+
+string getDiagR(int y, int x) {
     string s;
-    while (0 <= ny && ny < N && 0 <= nx && nx < N) {
-        s += arr[ny++][nx++];
-    }
+    while (y < N && x < N) s += arr[y++][x++];
     return s;
 }
 
-// 오른쪽에서 왼쪽으로 아래 방향 대각선
-string getLeftDiagonal(const int& y, const int& x) {
-    int ny = y;
-    int nx = x;
+string getDiagL(int y, int x) {
     string s;
-    while (0 <= ny && ny < N && 0 <= nx && nx < N) {
-        s += arr[ny++][nx--];
-    }
+    while (y < N && x >= 0) s += arr[y++][x--];
     return s;
-}
-
-// 돌이 5개이상 연속으로 있는지 체크
-bool isFind(const string& s) {
-    if (s.find("ooooo") != string::npos)
-        return true;
-    else
-        return false;
 }
 
 int main() {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
 
-    // 테스트 수 입력
     cin >> T;
 
-    for (int i = 1; i <= T; i++) {
-        // 결과
-        bool answer = false;
-
-        // 오목 판의 사이즈 입력
+    for (int tc = 1; tc <= T; tc++) {
         cin >> N;
 
-        for (int j = 0; j < N; j++) {
-            string s;
-            cin >> s;
-            for (int k = 0; k < N; k++) {
-                arr[j][k] = s[k];
+        for (int i = 0; i < N; i++)
+            cin >> arr[i];
+
+        bool ok = false;
+
+        for (int i = 0; i < N && !ok; i++) {
+            string row, col;
+            for (int j = 0; j < N; j++) {
+                row += arr[i][j];
+                col += arr[j][i];
             }
+            if (hasFive(row) || hasFive(col)) ok = true;
         }
 
-        // 가로 오목 체크
-        for (int j = 0; j < N; j++) {
-            string row;
-            for (int k = 0; k < N; k++) row += arr[j][k];
-            if (isFind(row)) answer = true;
-            if (answer) break;
+        for (int i = 0; i < N && !ok; i++) {
+            string s = getDiagR(0, i);
+            if (hasFive(s)) ok = true;
+        }
+        for (int i = 1; i < N && !ok; i++) {
+            string s = getDiagR(i, 0);
+            if (hasFive(s)) ok = true;
         }
 
-        // 세로 오목 체크
-        for (int j = 0; j < N; j++) {
-            string col;
-            for (int k = 0; k < N; k++) col += arr[k][j];
-            if (isFind(col)) answer = true;
-            if (answer) break;
+        for (int i = 0; i < N && !ok; i++) {
+            string s = getDiagL(0, i);
+            if (hasFive(s)) ok = true;
+        }
+        for (int i = 1; i < N && !ok; i++) {
+            string s = getDiagL(i, N - 1);
+            if (hasFive(s)) ok = true;
         }
 
-        // 대각선 오목 체크
-        for (int j = 0; j < N; j++) {
-            string diagonal = getRightDiagonal(0, j);
-            if (diagonal.size() < 5) continue;
-            if (isFind(diagonal)) answer = true;
-            if (answer) break;
-        }
-
-        for (int j = 0; j < N; j++) {
-            string diagonal = getRightDiagonal(j, 0);
-            if (diagonal.size() < 5) continue;
-            if (isFind(diagonal)) answer = true;
-            if (answer) break;
-        }
-
-        for (int j = 0; j < N; j++) {
-            string diagonal = getLeftDiagonal(0, j);
-            if (diagonal.size() < 5) continue;
-            if (isFind(diagonal)) answer = true;
-            if (answer) break;
-        }
-
-        for (int j = 0; j < N; j++) {
-            string diagonal = getLeftDiagonal(j, N - 1);
-            if (diagonal.size() < 5) continue;
-            if (isFind(diagonal)) answer = true;
-            if (answer) break;
-        }
-
-        cout << '#' << i << ' ' << (answer ? "YES" : "NO") << '\n';
+        cout << '#' << tc << ' ' << (ok ? "YES" : "NO") << '\n';
     }
-
-    return 0;
 }
