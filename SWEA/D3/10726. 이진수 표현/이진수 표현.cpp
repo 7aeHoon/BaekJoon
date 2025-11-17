@@ -19,16 +19,9 @@ int main() {
 
         cin >> N >> M;
 
-        // 마지막 N개의 비트를 확인
-        for (int j = 0; j < N; j++) {
-            // 비트 0000 0001 시작
-            int num = 1 << j;
-            // 뒤에서부터 j번째 비트 체크
-            if((M & num) != num) {
-                answer = "OFF";
-                break;
-            }
-        }
+        int num = pow(2, N) - 1;
+
+        answer = ((num & M) == num) ? "ON" : "OFF";
 
         // 결과 출력
         cout << '#' << i << ' ' << answer << '\n';
