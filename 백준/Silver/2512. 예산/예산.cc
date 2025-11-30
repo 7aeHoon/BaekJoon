@@ -33,18 +33,14 @@ int main() {
             int sum = 0;
 
             for (const auto& budget : busgets) {
-                if(budget > mid) {
-                    sum += mid;
-                } else {
-                    sum += budget;
-                }
+                sum += min(budget, mid);
             }
             
             // 국가 예산값으로 불가능할 경우
             if(sum > M) {
                 r = mid - 1;
             } else {
-                answer = max(answer, mid);
+                answer = mid;
                 l = mid + 1;
             }
         }
