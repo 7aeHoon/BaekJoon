@@ -18,9 +18,8 @@ int main() {
     }
 
     // 가로등은 최소 1개이상 설치됨
-
-    answer = max(answer, v.front());
-    answer = max(answer, N - v.back());
+    
+    answer = max(v.front(), N - v.back());
 
     for (int i = 1; i < M; i++) {
         int diff = v[i] - v[i - 1];
