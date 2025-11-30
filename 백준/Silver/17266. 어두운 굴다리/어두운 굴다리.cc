@@ -18,16 +18,12 @@ int main() {
     }
 
     // 가로등은 최소 1개이상 설치됨
-    
+
     answer = max(v.front(), N - v.back());
 
     for (int i = 1; i < M; i++) {
-        int diff = v[i] - v[i - 1];
-        if (diff % 2 == 0) {
-            answer = max(answer, diff / 2);
-        } else {
-            answer = max(answer, diff / 2 + 1);
-        }
+        int dist = (v[i] - v[i - 1] + 1) / 2;
+        answer = max(answer, dist);
     }
 
     cout << answer << '\n';
