@@ -8,7 +8,7 @@ int main() {
     int N;
     cin >> N;
 
-    vector<long long> a(N);
+    vector<int> a(N);
     for (int i = 0; i < N; i++) {
         cin >> a[i];
     }
@@ -18,7 +18,7 @@ int main() {
     int answer = 0;
 
     for (int i = 0; i < N; i++) {
-        long long target = a[i];
+        int target = a[i];
         int left = 0;
         int right = N - 1;
 
