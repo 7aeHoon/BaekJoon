@@ -10,34 +10,35 @@ int main() {
 
     int N;
     cin >> N;
-    
-    if( N == 1) {
+
+    if (N < 2) {
         cout << 0 << '\n';
         return 0;
     }
 
-    vector<int> v(N + 1, 0);
+    vector<bool> isPrime(N + 1, true);
+    isPrime[0] = isPrime[1] = false;
 
     // 소수 판별하기
     for (int i = 2; i * i <= N; i++) {
-        if (v[i] == 1) continue;
+        if (!isPrime[i]) continue;
         for (int j = i * i; j <= N; j += i) {
-            v[j] = 1;
+            isPrime[j] = false;
         }
     }
 
     vector<int> primes;
 
+    // 소수만 담기
     for (int i = 2; i <= N; i++) {
-        if (v[i] == 0) primes.push_back(i);
+        if (isPrime[i]) primes.push_back(i);
     }
 
     // 투 포인터
-    int l = 0, r = 0;
-    long long sum = primes[0];
+    int l = 0, r = 0, sum = primes[0];
     int size = primes.size();
 
-    while (l < size && r < size && l <= r) {
+    while (l <= r) {
         if (sum == N) {
             answer++;
             sum -= primes[l++];
