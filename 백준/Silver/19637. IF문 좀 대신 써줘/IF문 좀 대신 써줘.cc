@@ -9,48 +9,21 @@ int main() {
     int N, M;
     cin >> N >> M;
 
-    // 칭호
-    vector<string> titles;
-    // 전투력
-    vector<int> forces;
+    vector<string> names(N);
+    vector<int> power(N);
 
-    for (int i = 0; i < N; i++) {
-        string title;
-        int force;
-
-        cin >> title >> force;
-
-        if (forces.empty()) {
-            titles.push_back(title);
-            forces.push_back(force);
-        } else {
-            if (forces.back() < force) {
-                titles.push_back(title);
-                forces.push_back(force);
-            }
-        }
+    for(int i = 0; i < N; i++){
+        cin >> names[i] >> power[i];   // 칭호, 전투력 상한
     }
 
-    for (int i = 0; i < M; i++) {
-        int userForce;
-        cin >> userForce;
+    while(M--){
+        int x;
+        cin >> x;
 
-        int l = 0;
-        int r = forces.size() - 1;
-        int index = 0;
+        // power 배열에서 x 이하를 만족하는 첫 위치를 찾음
+        int idx = lower_bound(power.begin(), power.end(), x) - power.begin();
 
-        while (l <= r) {
-            int m = (l + r) / 2;
-
-            if (userForce <= forces[m]) {
-                r = m - 1;
-                index = m;
-            } else {
-                l = m + 1;
-            }
-        }
-
-        cout << titles[index] << '\n';
+        cout << names[idx] << "\n";
     }
 
     return 0;
