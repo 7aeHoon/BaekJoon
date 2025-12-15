@@ -1,57 +1,57 @@
 #include <bits/stdc++.h>
-
 using namespace std;
-
-int N, M, boxMax, craneMax, answer;
-vector<int> boxes, cranes;
 
 int main() {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
 
+    int N;
     cin >> N;
 
+    vector<int> cranes(N);
     for (int i = 0; i < N; i++) {
-        int w;
-        cin >> w;
-        cranes.push_back(w);
-        craneMax = max(craneMax, w);
+        cin >> cranes[i];
     }
 
+    int M;
     cin >> M;
 
+    multiset<int> boxes;
     for (int i = 0; i < M; i++) {
         int w;
         cin >> w;
-        boxes.push_back(w);
-        boxMax = max(boxMax, w);
+        boxes.insert(w);
     }
 
-    if (boxMax > craneMax) {
+    sort(cranes.begin(), cranes.end(), greater<int>());
+
+    // 불가능 판정
+    if (!boxes.empty() && *prev(boxes.end()) > cranes[0]) {
         cout << -1 << '\n';
         return 0;
     }
 
-    sort(boxes.begin(), boxes.end(), greater<int>());
-    sort(cranes.begin(), cranes.end(), greater<int>());
+    int answer = 0;
 
     while (!boxes.empty()) {
-        int index = 0;
-
         for (int i = 0; i < N; i++) {
-            while (index < boxes.size()) {
-                if (cranes[i] >= boxes[index]) {
-                    boxes.erase(boxes.begin() + index);
-                    break;
-                }
-                index++;
-            }
-        }
+            if (boxes.empty()) break;
 
+            // cranes[i]보다 큰 첫 원소
+            auto it = boxes.upper_bound(cranes[i]);
+
+            if (it == boxes.begin()) {
+                // 들 수 있는 화물이 없음
+                continue;
+            }
+
+            // 들 수 있는 최대 화물
+            --it;
+            boxes.erase(it);
+        }
         answer++;
     }
 
     cout << answer << '\n';
-
     return 0;
 }
