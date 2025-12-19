@@ -21,17 +21,11 @@ int main() {
 
     priority_queue<int, vector<int>, greater<>> pq;
 
-    for(const auto& p : v) {
-        if(pq.empty()) {
-            pq.push(p.second);
-        } else {
-            if(pq.top() <= p.first) {
-                pq.pop();
-                pq.push(p.second);
-            } else {
-                pq.push(p.second);
-            }
+    for (const auto& p : v) {
+        if (!pq.empty() && pq.top() <= p.first) {
+            pq.pop();
         }
+        pq.push(p.second);
     }
 
     answer = pq.size();
