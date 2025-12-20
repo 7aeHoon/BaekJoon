@@ -1,8 +1,7 @@
 #include <bits/stdc++.h>
-
 using namespace std;
 
-int cnt, answer;
+int answer;
 int arr[100001];
 
 int main() {
@@ -12,32 +11,23 @@ int main() {
     int N, K;
     cin >> N >> K;
 
-    vector<int> v(N);
+    deque<int> deq;
 
     for (int i = 0; i < N; i++) {
-        cin >> v[i];
-    }
+        int num;
+        cin >> num;
 
-    int start = 0;
-
-    for (int end = 0; end < N; end++) {
-        int endNum = v[end];
-        // 등장 횟수 증가
-        arr[endNum]++;
-
-        // K보다 많이 등장했을 경우
-        while(arr[endNum] > K) {
-            int startNum = v[start];
-            // 등장 횟수 감소
-            arr[startNum]--;
-            // 시작 포인터 증가
-            start++;
+        while (arr[num] >= K) {
+            arr[deq.front()]--;
+            deq.pop_front();
         }
 
-        answer = max(answer, end - start + 1);
+        deq.push_back(num);
+        arr[num]++;
+
+        answer = max(answer, (int)deq.size());
     }
 
     cout << answer << '\n';
-
     return 0;
 }
