@@ -8,16 +8,6 @@ bool visited[301][301];
 int dy[] = {-1, 0, 1, 0};
 int dx[] = {0, 1, 0, -1};
 
-// 빙산이 존재하는지 체크
-bool isIceZero() {
-    for (int i = 0; i < N; i++) {
-        for (int j = 0; j < M; j++) {
-            if (ice[i][j]) return false;
-        }
-    }
-    return true;
-}
-
 // 빙하 주변 바다 사이즈 체크
 int getSeaSize(const int& y, const int& x) {
     int result = 0;
@@ -103,17 +93,20 @@ int main() {
     }
 
     while (true) {
-        // 녹일 빙산이 없으면 종료
-        if (isIceZero()) break;
-        // 빙산 분리 시작 카운트
-        year++;
-        // 빙산이 녹기 시작
-        meltIce();
-        // 빙산 영역 체크
-        if(checkIce() >= 2) {
+        int area = checkIce();
+
+        if (area >= 2) {
             answer = year;
             break;
         }
+
+        if (area == 0) {
+            answer = 0;
+            break;
+        }
+
+        meltIce();
+        year++;
     }
 
     cout << answer << '\n';
