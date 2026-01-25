@@ -3,8 +3,9 @@
 using namespace std;
 
 int N, K, answer;
+const int INF = 987654321;
 vector<int> coins;
-vector<int> dp(10005, INT_MAX);
+vector<int> dp(10005, INF);
 
 int main() {
     ios::sync_with_stdio(false);
@@ -25,17 +26,14 @@ int main() {
     dp[0] = 0;
 
     for (int i = 1; i <= K; i++) {
-        int result = INT_MAX;
         for (const int& coin : coins) {
             if(i - coin >= 0) {
-                result = min(result, dp[i - coin]);
+                dp[i] = min(dp[i], dp[i - coin] + 1);
             }
         }
-        if (result == INT_MAX) continue;
-        dp[i] = result + 1;
     }
 
-    answer = (dp[K] == INT_MAX ? -1 : dp[K]);
+    answer = (dp[K] == INF ? -1 : dp[K]);
 
     cout << answer << '\n';
 
