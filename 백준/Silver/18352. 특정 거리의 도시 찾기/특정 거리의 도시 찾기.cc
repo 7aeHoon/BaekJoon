@@ -3,10 +3,10 @@
 using namespace std;
 
 int N, M, K, X;
-bool visited[300005];
+int visited[300005];
+bool found;
 vector<int> city[300005];
-vector<int> cities;
-queue<pair<int, int>> q;
+queue<int> q;
 
 int main() {
     ios::sync_with_stdio(false);
@@ -20,38 +20,34 @@ int main() {
         city[from].push_back(to);
     }
 
-    q.push({X, 0});
-    visited[X] = true;
+    memset(visited, -1, sizeof(visited));
+
+    q.push(X);
+    visited[X] = 0;
 
     while (!q.empty()) {
-        int currentCity = q.front().first;
-        int dist = q.front().second;
+        // 현재 도시
+        int currentCity = q.front();
         q.pop();
 
-        // 출발 도시로부터 K만큼 초과할 경우 종료
-        if (dist > K) break;
-
-        // 출발 도시로부터 거리가 K인 도시를 저장
-        if (dist == K) {
-            cities.push_back(currentCity);
-        }
-
-        // 거리 1의 인접한 도시
-        for (const int nextCity : city[currentCity]) {
-            // 방문한 도시일 경우 패스
-            if (visited[nextCity]) continue;
-            q.push({nextCity, dist + 1});
-            visited[nextCity] = true;
+        for (int nextCity : city[currentCity]) {
+            // 이미 방문한 도시인 경우
+            if (visited[nextCity] != -1) continue;
+            // 다음 도시
+            q.push(nextCity);
+            // 방문 도시 처리
+            visited[nextCity] = visited[currentCity] + 1;
         }
     }
 
-    if (!cities.empty()) {
-        sort(cities.begin(), cities.end());
-
-        for (int city : cities) {
-            cout << city << '\n';
+    for (int i = 0; i <= N; i++) {
+        if (visited[i] == K) {
+            cout << i << '\n';
+            found = true;
         }
-    } else {
+    }
+
+    if (!found) {
         cout << -1 << '\n';
     }
 
