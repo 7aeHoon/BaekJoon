@@ -4,91 +4,23 @@ using namespace std;
 
 int N, answer;
 int classroom[21][21];
-unordered_map<int, unordered_set<int>> lovedStudent;
 int dy[4] = {-1, 0, 1, 0};
 int dx[4] = {0, 1, 0, -1};
-vector<int> students;
+vector<int> order;
+vector<int> likeStudent[401];
 
-// 커스텀 구조체
-struct info {
+struct Seat {
     int y;
     int x;
-    int lovedCnt;
     int emptyCnt;
+    int likeCnt;
 };
 
-bool cmp(info l, info r) {
-    if (l.lovedCnt != r.lovedCnt) return l.lovedCnt > r.lovedCnt;
+bool cmp(const Seat& l, const Seat& r) {
+    if (l.likeCnt != r.likeCnt) return l.likeCnt > r.likeCnt;
     if (l.emptyCnt != r.emptyCnt) return l.emptyCnt > r.emptyCnt;
     if (l.y != r.y) return l.y < r.y;
     return l.x < r.x;
-}
-
-// 최종 만족도를 구하는 함수
-int getSatisfaction() {
-    int result = 0;
-
-    for (int y = 0; y < N; y++) {
-        for (int x = 0; x < N; x++) {
-            // 현재 학생의 번호
-            int studentNum = classroom[y][x];
-            // 해당 학생이 좋아하는 인접 학생 수
-            int lovedCnt = 0;
-            for (int i = 0; i < 4; i++) {
-                int ny = y + dy[i];
-                int nx = x + dx[i];
-                // 영역을 벗어난 곳 제외
-                if (ny < 0 || ny >= N || nx < 0 || nx >= N) continue;
-                // 인접한 학생의 번호
-                int nearStudentNum = classroom[ny][nx];
-                // 해당 학생이 좋아하는 학생이 인접한 경우
-                if (lovedStudent[studentNum].find(nearStudentNum) != lovedStudent[studentNum].end()) {
-                    lovedCnt++;
-                }
-            }
-            // 최종 만족도에 누적
-            result += (lovedCnt == 0 ? 0 : pow(10, lovedCnt - 1));
-        }
-    }
-
-    return result;
-}
-
-// 교실에서 좋아하는 학생을 조회
-void findLovedStudent(const int& studentNum) {
-    vector<info> temp;
-
-    for (int y = 0; y < N; y++) {
-        for (int x = 0; x < N; x++) {
-            if (classroom[y][x] != 0) continue;
-
-            // 인접한 좋아하는 학생 수
-            int lovedCnt = 0;
-            // 인접한 비어있는 칸의 수
-            int emptyCnt = 0;
-            // 인접 방향 조회
-            for (int i = 0; i < 4; i++) {
-                int ny = y + dy[i];
-                int nx = x + dx[i];
-                // 영역을 벗어난 곳 제외
-                if (ny < 0 || ny >= N || nx < 0 || nx >= N) continue;
-                // 학생이 없는 빈 칸일 경우
-                if (classroom[ny][nx] == 0) {
-                    emptyCnt++;
-                    continue;
-                }
-                // 인접한 곳에 좋아하는 학생이 있을 경우
-                auto found = lovedStudent[studentNum].find(classroom[ny][nx]);
-                if (found != lovedStudent[studentNum].end()) lovedCnt++;
-            }
-            // 정보 저장
-            temp.push_back({y, x, lovedCnt, emptyCnt});
-        }
-    }
-
-    sort(temp.begin(), temp.end(), cmp);
-
-    classroom[temp.front().y][temp.front().x] = studentNum;
 }
 
 int main() {
@@ -97,32 +29,77 @@ int main() {
 
     cin >> N;
 
-    // 모든 학생마다 자신이 좋아하는 학생 4명 조사
-    for (int i = 0; i < N * N; i++) {
-        // 현재 학생의 번호
-        int studentNum;
-        cin >> studentNum;
+    int totalStudent = N * N;
 
-        // 자리를 먼저 맡을 학생 순서대로 저장
-        students.push_back(studentNum);
+    for (int i = 0; i < totalStudent; i++) {
+        int stu;
+        cin >> stu;
+
+        order.push_back(stu);
 
         for (int j = 0; j < 4; j++) {
-            // 현재 학생이 좋아하는 학생의 번호
-            int lovedStudentNum;
-            cin >> lovedStudentNum;
-            // 현재 학생이 좋아하는 학생의 번호를 저장
-            lovedStudent[studentNum].insert(lovedStudentNum);
+            int likeStu;
+            cin >> likeStu;
+
+            likeStudent[stu].push_back(likeStu);
         }
     }
 
-    // 순서대로 교실 자리 배치 시작
-    for (const int& studentNum : students) {
-        // 자신
-        findLovedStudent(studentNum);
+    for (int i = 0; i < totalStudent; i++) {
+        int stu = order[i];
+        vector<Seat> candidate;
+
+        for (int y = 0; y < N; y++) {
+            for (int x = 0; x < N; x++) {
+                if (classroom[y][x] != 0) continue;
+
+                int emptyCnt = 0;
+                int likeCnt = 0;
+
+                for (int j = 0; j < 4; j++) {
+                    int ny = y + dy[j];
+                    int nx = x + dx[j];
+
+                    if (ny < 0 || ny >= N || nx < 0 || nx >= N) continue;
+                    if (classroom[ny][nx] == 0) {
+                        emptyCnt++;
+                    } else {
+                        for (int k = 0; k < 4; k++) {
+                            if (classroom[ny][nx] == likeStudent[stu][k]) {
+                                likeCnt++;
+                                break;
+                            }
+                        }
+                    }
+                }
+                candidate.push_back({y, x, emptyCnt, likeCnt});
+            }
+        }
+        sort(candidate.begin(), candidate.end(), cmp);
+        classroom[candidate[0].y][candidate[0].x] = stu;
     }
 
-    // 학생 만족도 계산
-    answer = getSatisfaction();
+    for (int y = 0; y < N; y++) {
+        for (int x = 0; x < N; x++) {
+            int likeCnt = 0;
+            int stu = classroom[y][x];
+
+            for (int i = 0; i < 4; i++) {
+                int ny = y + dy[i];
+                int nx = x + dx[i];
+
+                if (ny < 0 || ny >= N || nx < 0 || nx >= N) continue;
+
+                for (int j = 0; j < 4; j++) {
+                    if (classroom[ny][nx] == likeStudent[stu][j]) {
+                        likeCnt++;
+                        break;
+                    }
+                }
+            }
+            if (likeCnt > 0) answer += pow(10, likeCnt - 1);
+        }
+    }
 
     // 결과 출력
     cout << answer << '\n';
