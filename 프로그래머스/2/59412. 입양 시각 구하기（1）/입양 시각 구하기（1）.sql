@@ -1,0 +1,6 @@
+-- 코드를 입력하세요
+SELECT HOUR(datetime) AS HOUR, COUNT(*)
+FROM animal_outs
+WHERE HOUR(datetime) BETWEEN 9 AND 19
+GROUP BY HOUR
+ORDER BY HOUR;
