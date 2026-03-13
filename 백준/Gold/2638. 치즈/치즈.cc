@@ -2,41 +2,10 @@
 
 using namespace std;
 
-int N, M, answer;
-int board[101][101], melting[101][101];
-bool visited[101][101];
+int N, M, answer, totalCheese;
+int board[101][101];
 int dy[4] = {-1, 0, 1, 0};
 int dx[4] = {0, 1, 0, -1};
-vector<pair<int, int>> cheese;
-
-// 모눈종이에 치즈 존재 여부 체크
-bool isCheeseEmpty() {
-    for (int i = 0; i < N; i++) {
-        for (int j = 0; j < M; j++) {
-            // 모눈종이에 치즈가 존재할 경우
-            if (board[i][j] == 1) {
-                return false;
-            }
-        }
-    }
-
-    return true;
-}
-
-// 공기와 2회 이상 접촉한 치즈 녹이기
-void meltCheese() {
-    for (int i = 0; i < N; i++) {
-        for (int j = 0; j < M; j++) {
-            if (melting[i][j] >= 2) board[i][j] = 0;
-        }
-    }
-}
-
-// 초기화
-void clear() {
-    memset(melting, 0, sizeof(melting));
-    memset(visited, false, sizeof(visited));
-}
 
 int main() {
     ios::sync_with_stdio(false);
@@ -48,18 +17,17 @@ int main() {
     for (int i = 0; i < N; i++) {
         for (int j = 0; j < M; j++) {
             cin >> board[i][j];
+            if (board[i][j] == 1) totalCheese++;
         }
     }
 
     // 치즈 녹이기 시작
-    while (true) {
-        // 치즈가 없으면 종료
-        if (isCheeseEmpty()) break;
-
-        clear();
+    while (totalCheese > 0) {
+        vector<vector<int>> contact(N, vector<int>(M, 0));
+        vector<vector<bool>> visited(N, vector<bool>(M, false));
+        queue<pair<int, int>> q;
 
         // (0, 0)에서 BFS 탐색 시작
-        queue<pair<int, int>> q;
         q.push({0, 0});
         visited[0][0] = true;
 
@@ -77,8 +45,7 @@ int main() {
                 if (visited[ny][nx]) continue;
                 // 치즈가 있는 공간일 경우
                 if (board[ny][nx] == 1) {
-                    // 공기와 접촉 카운트 증가
-                    melting[ny][nx] += 1;
+                    contact[ny][nx]++;
                     continue;
                 }
                 q.push({ny, nx});
@@ -87,7 +54,14 @@ int main() {
         }
 
         // 공기와 접촉한 치즈 찾기
-        meltCheese();
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < M; j++) {
+                if (contact[i][j] >= 2) {
+                    board[i][j] = 0;
+                    totalCheese--;
+                }
+            }
+        }
 
         // 시간 증가
         answer++;
