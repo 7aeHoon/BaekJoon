@@ -3,14 +3,76 @@
 using namespace std;
 
 int N, M, answer = INT_MAX;
-int emptySpaceCnt = 0;
-char lab[51][51];
+int lab[51][51];
 int visited[51][51];
-int dy[] = {-1, 0, 1, 0};
-int dx[] = {0, 1, 0, -1};
-vector<pair<int, int>> viruses;
+int dy[4] = {-1, 0, 1, 0};
+int dx[4] = {0, 1, 0, -1};
+vector<pair<int, int>> virus;
+queue<pair<int, int>> q;
 
-void clear() { fill(&visited[0][0], &visited[0][0] + (51 * 51), -1); }
+void clear() {
+    memset(visited, -1, sizeof(visited));
+    while (!q.empty()) {
+        q.pop();
+    }
+}
+
+int bfs(vector<int> selected) {
+    clear();
+
+    for (auto idx : selected) {
+        auto [y, x] = virus[idx];
+        q.push({y, x});
+        visited[y][x] = 0;
+    }
+
+    int maxDist = 0;
+
+    while (!q.empty()) {
+        auto [y, x] = q.front();
+        q.pop();
+
+        for (int i = 0; i < 4; i++) {
+            int ny = y + dy[i];
+            int nx = x + dx[i];
+
+            if (ny < 0 || ny >= N || nx < 0 || nx >= N) continue;
+            if (lab[ny][nx] == 1) continue;
+            if (visited[ny][nx] != -1) continue;
+
+            q.push({ny, nx});
+            visited[ny][nx] = visited[y][x] + 1;
+
+            if (lab[ny][nx] == 0) {
+                maxDist = max(maxDist, visited[ny][nx]);
+            }
+        }
+    }
+
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < N; j++) {
+            if (lab[i][j] == 0 && visited[i][j] == -1) {
+                return INT_MAX;
+            }
+        }
+    }
+
+    return maxDist;
+}
+
+void dfs(int idx, vector<int> selected) {
+    if (selected.size() == M) {
+        int dist = bfs(selected);
+        answer = min(answer, dist);
+        return;
+    }
+
+    for (int i = idx; i < virus.size(); i++) {
+        selected.push_back(i);
+        dfs(i + 1, selected);
+        selected.pop_back();
+    }
+}
 
 int main() {
     ios::sync_with_stdio(false);
@@ -21,96 +83,16 @@ int main() {
     for (int i = 0; i < N; i++) {
         for (int j = 0; j < N; j++) {
             cin >> lab[i][j];
-
-            // 벽일 경우
-            if (lab[i][j] == '1') {
-                lab[i][j] = '-';
-                continue;
-            }
-
             // 바이러스일 경우
-            if (lab[i][j] == '2') {
-                lab[i][j] = '*';
-                viruses.push_back({i, j});
-                continue;
+            if (lab[i][j] == 2) {
+                virus.push_back({i, j});
             }
-            // 빈 칸의 수 증가
-            emptySpaceCnt++;
         }
     }
 
-    if (emptySpaceCnt == 0) {
-        cout << 0 << '\n';
-        return 0;
-    }
+    dfs(0, vector<int>());
 
-    // 연구소에 존재하는 바이러스 수
-    int virusCnt = viruses.size();
-
-    // 비트마스킹으로 M개의 바이러스 추출
-    for (int mask = 1; mask < (1 << virusCnt); mask++) {
-        clear();
-        // 선택된 바이러스의 좌표
-        vector<pair<int, int>> selectedViruses;
-
-        for (int i = 0; i < virusCnt; i++) {
-            if (mask & (1 << i)) {
-                // 선택된 바이러스를 저장
-                selectedViruses.push_back(viruses[i]);
-            }
-        }
-
-        // 정확히 M개의 바이러스를 뽑지 못 했을 경우 패스
-        if (selectedViruses.size() != M) continue;
-
-        queue<pair<int, int>> q;
-
-        for (const auto virus : selectedViruses) {
-            q.push(virus);
-            visited[virus.first][virus.second] = 0;
-        }
-
-        // BFS로 바이러스 전파
-        while (!q.empty()) {
-            auto [y, x] = q.front();
-            q.pop();
-
-            for (int i = 0; i < 4; i++) {
-                int ny = y + dy[i];
-                int nx = x + dx[i];
-
-                // 영역 밖일 경우
-                if (ny < 0 || ny >= N || nx < 0 || nx >= N) continue;
-                // 벽 또는 이미 방문한 빈 칸일 경우
-                if (lab[ny][nx] == '-' || visited[ny][nx] != -1) continue;
-
-                q.push({ny, nx});
-                visited[ny][nx] = visited[y][x] + 1;
-            }
-        }
-
-        int checked = 0;
-        int _max = INT_MIN;
-
-        for (int i = 0; i < N; i++) {
-            for (int j = 0; j < N; j++) {
-                if (lab[i][j] == '0' && visited[i][j] != -1) {
-                    checked++;
-                    _max = max(_max, visited[i][j]);
-                }
-            }
-        }
-
-        if (checked == emptySpaceCnt) {
-            answer = min(answer, _max);
-        }
-    }
-
-    if (answer == INT_MAX) {
-        answer = -1;
-    }
-
-    cout << answer << '\n';
+    cout << (answer == INT_MAX ? -1 : answer) << '\n';
 
     return 0;
 }
