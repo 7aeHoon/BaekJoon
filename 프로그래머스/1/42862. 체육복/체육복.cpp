@@ -1,51 +1,45 @@
-#include <bits/stdc++.h>
+#include <string>
+#include <vector>
 
 using namespace std;
 
 int solution(int n, vector<int> lost, vector<int> reserve) {
     int answer = 0;
 
-    vector<int> students(n + 1, 1);
+    // 초기에 N명의 학생이 1개의 체육복을 가지고 있음
+    vector<int> student(n + 1, 1);
 
     // 체육복을 잃어버린 학생
-    for (const auto& num : lost) {
-        students[num]--;
+    for (const int& num : lost) {
+        student[num]--;
     }
 
-    // 여분의 체육복이 있는 학생
-    for (const auto& num : reserve) {
-        students[num]++;
+    // 여분의 체육복을 가진 학생
+    for (const int& num : reserve) {
+        student[num]++;
     }
 
-    // 1번 학생은 우측 학생만
-    if (students[1] >= 2 && students[2] == 0) {
-        students[2]++;
-        students[1]--;
-    }
-
-    for (int i = 2; i <= n - 1; i++) {
-        if (students[i] < 2) continue;
-        if (students[i - 1] == 0) {
-            students[i - 1]++;
-            students[i]--;
-            continue;
-        }
-        if (students[i + 1] == 0) {
-            students[i + 1]++;
-            students[i]--;
-            continue;
-        }
-    }
-
-    // n번 학생은 좌측 학생만
-    if (students[n] >= 2 && students[n - 1] == 0) {
-        students[n - 1] = 1;
-        students[n]--;
-    }
-
-    // 체육복이 있는 학생 카운트
     for (int i = 1; i <= n; i++) {
-        if (students[i] >= 1) answer++;
+        // 만약 체육복이 없는 학생일 경우
+        if (student[i] == 0) {
+            // 왼쪽 학생
+            if (student[i - 1] >= 2 && i - 1 >= 1) {
+                student[i]++;
+                student[i - 1]--;
+                continue;
+            }
+            // 오른쪽 학생
+            if (student[i + 1] >= 2 && i + 1 <= n) {
+                student[i]++;
+                student[i + 1]--;
+                continue;
+            }
+        }
+    }
+
+    for (int i = 1; i <= n; i++) {
+        // 체육복이 1개 이상일 경우
+        if (student[i] >= 1) answer++;
     }
 
     return answer;
