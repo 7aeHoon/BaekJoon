@@ -1,62 +1,39 @@
-#include <algorithm>
-#include <iostream>
-#include <vector>
+#include <bits/stdc++.h>
 
 using namespace std;
 
-int STACK[10000];
-int TOP = -1;
+int N, num;
+stack<int> st;
 
-void stack_push(const int& num) { 
-    STACK[++TOP] = num; 
-}
-int stack_pop() {
-    if (TOP == -1) {  // 스택에 원소가 없을 때
-        return -1;
-    } else {
-        return STACK[TOP--];
-    }
-}
-int stack_size() { 
-    return TOP + 1; 
-}
-int stackIsEmpty() {
-    if (TOP == -1) {
-        return 1;
-    } else {
-        return 0;
-    }
-}
-int stack_top() {
-    if (TOP == -1) {
-        return -1;
-    } else {
-        return STACK[TOP];
-    }
-}
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
 
-int main(void) {
-    ios_base::sync_with_stdio(false), cin.tie(NULL), cout.tie(NULL);
+    // 주어지는 명령의 수
+    cin >> N;
 
-    string str;
-    int n;
+    for (int i = 0; i < N; i++) {
+        string cmd;
+        // 주어지는 명령
+        cin >> cmd;
 
-    cin >> n;
-
-    for (int i = 0; i < n; i++) {
-        cin >> str;
-        if (str == "push") {
-            int num;
-            cin >> num;       // top비교해야함
-            stack_push(num);  // 입력받은 정수를 스택에 삽입
-        } else if (str == "pop") {
-            cout << stack_pop() << '\n';
-        } else if (str == "size") {
-            cout << stack_size() << '\n';
-        } else if (str == "empty") {
-            cout << stackIsEmpty() << '\n';
-        } else if (str == "top") {
-            cout << stack_top() << '\n';
+        if (cmd == "push") {
+            // 스택에 넣을 정수 입력
+            cin >> num;
+            st.push(num);
+        } else if (cmd == "pop") {
+            if (!st.empty()) {
+                cout << st.top() << '\n';
+                st.pop();
+            } else {
+                cout << -1 << '\n';
+            }
+        } else if (cmd == "size") {
+            cout << st.size() << '\n';
+        } else if (cmd == "empty") {
+            cout << (st.empty() ? 1 : 0) << '\n';
+        } else if (cmd == "top") {
+            cout << (!st.empty() ? st.top() : -1) << '\n';
         }
     }
 
