@@ -6,7 +6,7 @@ int N, answer, beforeEnd;
 vector<pair<int, int>> meetings;
 
 // 커스텀 회의 정렬 함수 정의
-bool compare(const pair<int, int>& l, const pair<int, int>& r) { 
+bool compare(const pair<int, int>& l, const pair<int, int>& r) {
     // 종료 시간을 먼저 비교하고 이후 시작 시간을 비교
     return tie(l.second, l.first) < tie(r.second, r.first);
 }
@@ -30,15 +30,14 @@ int main() {
     sort(meetings.begin(), meetings.end(), compare);
 
     for (const auto& meeting : meetings) {
+        // 다음 시작 시간 및 종료 시간
         int nextStart = meeting.first;
         int nextEnd = meeting.second;
-
-        // 회의 시간이 겹치지 않고 다음 회의가 가능한 경우
-        if (beforeEnd <= nextStart) {
-            // 종료 시간 갱신
-            beforeEnd = nextEnd;
-            answer++;
-        }
+        // 회의가 서로 겹치는 경우는 제외
+        if (nextStart < beforeEnd) continue;
+        // 종료 시간 갱신
+        beforeEnd = nextEnd;
+        answer++;
     }
 
     cout << answer << '\n';
