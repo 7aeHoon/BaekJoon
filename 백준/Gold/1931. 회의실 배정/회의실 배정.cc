@@ -1,34 +1,42 @@
-#include <algorithm>
-#include <iostream>
-#include <string>
-#include <vector>
+#include <bits/stdc++.h>
 
 using namespace std;
 
-int N, answer, beforeEndTime;
-vector<pair<int, int>> v;
+int N, answer, beforeEnd;
+vector<pair<int, int>> meetings;
 
-bool compare(const pair<int, int> &l, const pair<int, int> &r) {
+// 커스텀 회의 정렬 함수 정의
+bool compare(const pair<int, int>& l, const pair<int, int>& r) { 
+    // 종료 시간을 먼저 비교하고 이후 시작 시간을 비교
     return tie(l.second, l.first) < tie(r.second, r.first);
 }
 
 int main() {
-    ios_base::sync_with_stdio(false);
-    cin.tie(NULL), cout.tie(NULL);
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
 
+    // 회의의 수 입력
     cin >> N;
 
+    // N개의 회의 정보를 담고 있는 벡터
+    meetings.resize(N);
+
     for (int i = 0; i < N; i++) {
-        int startTime, endTime;
-        cin >> startTime >> endTime;
-        v.push_back({startTime, endTime});
+        // 회의의 시작 시간 및 종료 시간 입력
+        cin >> meetings[i].first >> meetings[i].second;
     }
 
-    sort(v.begin(), v.end(), compare);
+    // 종료 시간을 기준으로 오름차순 정렬
+    sort(meetings.begin(), meetings.end(), compare);
 
-    for (const pair<int, int> meeting: v) {
-        if(beforeEndTime <= meeting.first) {
-            beforeEndTime = meeting.second;
+    for (const auto& meeting : meetings) {
+        int nextStart = meeting.first;
+        int nextEnd = meeting.second;
+
+        // 회의 시간이 겹치지 않고 다음 회의가 가능한 경우
+        if (beforeEnd <= nextStart) {
+            // 종료 시간 갱신
+            beforeEnd = nextEnd;
             answer++;
         }
     }
