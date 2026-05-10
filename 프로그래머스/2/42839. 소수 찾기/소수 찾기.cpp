@@ -2,47 +2,50 @@
 
 using namespace std;
 
-const int MAX = 10000000;
-bool isPrime[MAX + 1];
-bool visited[8];
-unordered_set<int> us;
+set<int> nums;
+bool visited[10];
 
-void dfs(string current, const string& numbers) {
-    int size = numbers.size();
+bool isPrime(int n) {
 
-    if (!current.empty()) {
-        us.insert(stoi(current));
-        cout << stoi(current) << '\n';
+    if (n < 2) return false;
+
+    for (int i = 2; i * i <= n; i++) {
+        if (n % i == 0) {
+            return false;
+        }
     }
 
-    for (int i = 0; i < size; i++) {
+    return true;
+}
+
+void dfs(string numbers, string current) {
+
+    // 숫자 생성
+    if (!current.empty()) {
+        nums.insert(stoi(current));
+    }
+
+    for (int i = 0; i < numbers.size(); i++) {
+
         if (visited[i]) continue;
+
         visited[i] = true;
-        dfs(current + numbers[i], numbers);
+
+        dfs(numbers, current + numbers[i]);
+
         visited[i] = false;
     }
 }
 
 int solution(string numbers) {
+
+    dfs(numbers, "");
+
     int answer = 0;
 
-    fill(isPrime, isPrime + MAX + 1, true);
+    for (int num : nums) {
 
-    isPrime[0] = false;
-    isPrime[1] = false;
-
-    for (int i = 2; i * i <= MAX; i++) {
-        if (!isPrime[i]) continue;
-
-        for (int j = i + i; j <= MAX; j += i) {
-            isPrime[j] = false;
-        }
-    }
-
-    dfs("", numbers);
-
-    for (const int& num : us) {
-        if (isPrime[num]) {
+        if (isPrime(num)) {
             answer++;
         }
     }
