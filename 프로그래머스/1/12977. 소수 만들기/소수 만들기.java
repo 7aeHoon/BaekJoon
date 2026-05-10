@@ -1,34 +1,29 @@
 class Solution {
-    private int answer = 0;
-    private int[] nums;
-
     public int solution(int[] nums) {
-        this.nums = nums;
-        
-        // n개 중 3개를 뽑는 DFS 시작
-        // dfs(시작 인덱스, 현재까지 뽑은 개수, 현재까지의 합)
-        dfs(0, 0, 0);
-        
+        int answer = 0;
+        int n = nums.length;
+
+        // 1. 서로 다른 3개의 숫자를 선택 (중복 없이)
+        for (int i = 0; i < n - 2; i++) {
+            for (int j = i + 1; j < n - 1; j++) {
+                for (int k = j + 1; k < n; k++) {
+                    int sum = nums[i] + nums[j] + nums[k];
+                    
+                    // 2. 합이 소수인지 판별
+                    if (isPrime(sum)) {
+                        answer++;
+                    }
+                }
+            }
+        }
+
         return answer;
     }
 
-    private void dfs(int start, int count, int sum) {
-        // 1. 기저 조건: 3개를 모두 뽑았을 때
-        if (count == 3) {
-            if (isPrime(sum)) {
-                answer++;
-            }
-            return;
-        }
-
-        // 2. 재귀 호출: 현재 인덱스 이후의 숫자들을 하나씩 선택
-        for (int i = start; i < nums.length; i++) {
-            dfs(i + 1, count + 1, sum + nums[i]);
-        }
-    }
-
+    // 소수 판별 메서드
     private boolean isPrime(int num) {
         if (num < 2) return false;
+        // 제곱근까지만 확인하여 성능 최적화
         for (int i = 2; i <= Math.sqrt(num); i++) {
             if (num % i == 0) return false;
         }
