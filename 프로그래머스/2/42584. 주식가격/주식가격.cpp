@@ -1,28 +1,27 @@
-#include <algorithm>
-#include <iostream>
-#include <stack>
 #include <string>
 #include <vector>
+#include <stack>
 
 using namespace std;
 
 vector<int> solution(vector<int> prices) {
-    vector<int> answer(prices.size());
-    stack<pair<int, int>> s;
-
-    for (int i = 0; i < prices.size(); i++) {
-        while (!s.empty() && (s.top().second > prices[i])) {
-            int time = s.top().first;
-            answer[time] = i - time;
-            s.pop();
+    vector<int> answer(prices.size(), 0);
+    stack<int> st;
+    
+    for(int i = 0; i<prices.size(); i++) {
+        int top = i;
+        while(!st.empty() && prices[st.top()] > prices[i]) {
+            top = st.top();
+            st.pop();
+            answer[top] = i - top; 
         }
-        s.push({i, prices[i]});
-    }
-
-    while (!s.empty()) {
-        int time = s.top().first;
-        answer[time] = prices.size() - 1 - time;
-        s.pop();
+        st.push(i);
+        
+    } 
+    
+    while(!st.empty()) {
+        answer[st.top()] = prices.size() - st.top() -1 ;
+        st.pop();
     }
     
     return answer;
