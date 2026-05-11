@@ -2,85 +2,93 @@
 
 using namespace std;
 
-// 길이가 2자 이하라면, new_id의 마지막 문자를 new_id의 길이가 3이 될 때까지 반복해서 끝에 추가
-string authStepSeven(string id) {
-    while(id.size() <= 2) {
-        id += id.back();
+string stepOne(string id) {
+    string result = "";
+
+    for (int i = 0; i < id.size(); i++) {
+        char ch = id[i];
+        if (isupper(ch)) {
+            ch = tolower(ch);
+        }
+        result += ch;
     }
+
+    return result;
+}
+
+string stepTwo(string id) {
+    string result = "";
+
+    for (const char& ch : id) {
+        if (islower(ch) || isdigit(ch) || ch == '-' || ch == '_' || ch == '.') {
+            result += ch;
+        }
+    }
+
+    return result;
+}
+
+string stepThree(string id) {
+    string result = "";
+
+    for (const char& ch : id) {
+        if (!result.empty() && result.back() == '.' && ch == '.') {
+            continue;
+        }
+        result += ch;
+    }
+
+    return result;
+}
+
+string stepFour(string id) {
+    if (!id.empty() && id.front() == '.') {
+        id.erase(0, 1);
+    }
+
+    if (!id.empty() && id.back() == '.') {
+        id.pop_back();
+    }
+
     return id;
 }
 
-// 길이가 16자 이상이면, new_id의 첫 15개의 문자를 제외한 나머지 문자들을 모두 제거
-string authStepSix(string id) {
-    int size = id.size();
-    int cnt = min(size, 15);
-    string subStr = id.substr(0, cnt);
-    while(subStr.back() == '.') {
-        subStr.pop_back();
-    }
-    return subStr;
-}
-
-// 빈 문자열이라면, new_id에 "a"를 대입
-string authStepFive(string id) {
-    if(id.empty()) {
+string stepFive(string id) {
+    if (id.empty()) {
         id += 'a';
     }
     return id;
 }
 
-// 마침표(.)가 처음이나 끝에 위치한다면 제거
-string authStepFour(string id) {
-    if(id.front() == '.') {
-        id.erase(0, 1);
+string stepSix(string id) {
+    if (id.size() >= 16) {
+        id.erase(15);
     }
-    if(id.back() == '.') {
-        id.erase(id.size() - 1, 1);
-    }
-    return id;
-}
 
-//  마침표(.)가 2번 이상 연속된 부분을 하나의 마침표(.)로 치환
-string authStepThree(string id) {
-    int pos;
-    while((pos = id.find("..")) != string::npos) {
-        id.replace(pos, 2, ".");
+    if (!id.empty() && id.back() == '.') {
+        id.pop_back();
     }
     return id;
 }
- 
-// 알파벳 소문자, 숫자, 빼기(-), 밑줄(_), 마침표(.)를 제외한 모든 문자를 제거
-string authStepTwo(string id) {
-    string ret;
 
-    for(char ch: id) {
-        if((97 <= ch && ch <= 122) || (48 <= ch && ch <= 57) || ch == '-' || ch == '_' || ch == '.') {
-            ret += ch;
-        }
+string stepSeven(string id) {
+    while (id.size() < 3) {
+        id.push_back(id.back());
     }
 
-    return ret;
-}
-
-// 대문자를 소문자로 치환
-string authStepOne(string id) {
-    string ret;
-
-    for(char ch: id) {
-        ret += isupper(ch) ? (ch + 32) : ch;
-    }
-
-    return ret;
+    return id;
 }
 
 string solution(string new_id) {
     string answer = "";
-    answer = authStepOne(new_id);
-    answer = authStepTwo(answer);
-    answer = authStepThree(answer);
-    answer = authStepFour(answer);
-    answer = authStepFive(answer);
-    answer = authStepSix(answer);
-    answer = authStepSeven(answer);
+
+    answer = stepOne(new_id);
+    answer = stepTwo(answer);
+    answer = stepThree(answer);
+    answer = stepFour(answer);
+    answer = stepFive(answer);
+    answer = stepSix(answer);
+    answer = stepSeven(answer);
+
     return answer;
 }
