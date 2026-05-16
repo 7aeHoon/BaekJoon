@@ -2,43 +2,45 @@
 
 using namespace std;
 
-queue<pair<string, int>> q;
-bool visited[51];
+int isDiffOne(const string& first, const string& second) {
+    int size = first.size();
+    int cnt = 0;
 
-bool check(const string &s1, const string &s2) {
-    int corrected = 0;
-    for (int i = 0; i < s1.size(); i++) {
-        if (s1[i] == s2[i]) {
-            corrected++;
-        }
+    for (int i = 0; i < size; i++) {
+        if (first[i] != second[i]) cnt++;
     }
-    return (corrected + 1 == s1.size()) ? true : false;
+
+    return (cnt == 1) ? true : false;
 }
 
 int solution(string begin, string target, vector<string> words) {
-    int answer = 0;
-
+    // target이 words 리스트에 없으면 변환 불가능
     if (find(words.begin(), words.end(), target) == words.end()) {
         return 0;
     }
 
+    int size = words.size();
+    queue<pair<string, int>> q;
+    vector<bool> visited(size, false);
+
     q.push({begin, 0});
 
     while (!q.empty()) {
-        string str = q.front().first;
+        string currentWord = q.front().first;
         int cnt = q.front().second;
         q.pop();
-        if (str == target) {
-            answer = cnt;
-            break;
+
+        // 목표 단어 변환에 성공했을 경우
+        if (currentWord == target) {
+            return cnt;
         }
-        for (int i = 0; i < words.size(); i++) {
-            if (check(str, words[i]) && !visited[i]) {
-                q.push({words[i], cnt + 1});
-                visited[i] = true;
-            }
+
+        for (int i = 0; i < size; i++) {
+            if (visited[i] || !isDiffOne(currentWord, words[i])) continue;
+            q.push({words[i], cnt + 1});
+            visited[i] = true;
         }
     }
 
-    return answer;
+    return 0;
 }
