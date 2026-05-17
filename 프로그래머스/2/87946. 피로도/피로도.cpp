@@ -18,13 +18,9 @@ void dfs(const int& remainHP, vector<vector<int>> &dungeons, vector<bool>& visit
 
 // 던전 방문 순서에 따라 결과가 달라짐
 int solution(int k, vector<vector<int>> dungeons) {
-    int answer = -1;
-
     vector<bool> visited(dungeons.size(), false);
 
     dfs(k, dungeons, visited, 0);
 
-    answer = maxCnt;
-
-    return answer;
+    return maxCnt;
 }
