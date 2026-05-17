@@ -14,32 +14,24 @@ bool isPrime(const int& num) {
     return true;
 }
 
-void dfs(const string& str, const vector<char>& nums, vector<bool>& visited) {
+void dfs(const string& str, const string& numbers, vector<bool>& visited) {
     if (!str.empty()) {
         unSet.insert(stoi(str));
     }
 
-    for (int i = 0; i < nums.size(); i++) {
+    for (int i = 0; i < numbers.size(); i++) {
         if (visited[i]) continue;
         visited[i] = true;
-        dfs(str + nums[i], nums, visited);
+        dfs(str + numbers[i], numbers, visited);
         visited[i] = false;
     }
 }
 
 int solution(string numbers) {
     int answer = 0;
+    vector<bool> visited(numbers.size(), false);
 
-    vector<char> nums;
-    vector<bool> visited;
-
-    for (const char& ch : numbers) {
-        nums.push_back(ch);
-    }
-
-    visited.resize(nums.size(), false);
-
-    dfs("", nums, visited);
+    dfs("", numbers, visited);
 
     for (const int& num : unSet) {
         if (isPrime(num)) {
