@@ -1,19 +1,29 @@
-#include <iostream>
-#include <vector>
+#include <bits/stdc++.h>
+
 using namespace std;
 
-
-int dfs(const vector<int>& numbers, int index, int sum, int target) {
-    if(index == numbers.size()) {
-        return (sum == target) ? 1 : 0;
-    }
-    
-    int countAdd = dfs(numbers, index + 1, sum + numbers[index], target);
-    int countSub = dfs(numbers, index + 1, sum - numbers[index], target);
-    
-    return countAdd + countSub;
-}
-
 int solution(vector<int> numbers, int target) {
-    return dfs(numbers, 0, 0, target);
+    int answer = 0;
+    int size = numbers.size();
+
+    for (int mask = 0; mask < (1 << size); mask++) {
+        vector<int> op;
+        int sum = 0;
+
+        for (int i = 0; i < size; i++) {
+            if (mask & (1 << i)) {
+                op.push_back(1);
+            } else {
+                op.push_back(-1);
+            }
+        }
+
+        for (int i = 0; i < size; i++) {
+            sum += op[i] * numbers[i];
+        }
+
+        if (sum == target) answer++;
+    }
+
+    return answer;
 }
