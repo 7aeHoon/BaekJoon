@@ -2,28 +2,23 @@
 
 using namespace std;
 
-int solution(vector<int> numbers, int target) {
-    int answer = 0;
-    int size = numbers.size();
+int answer;
 
-    for (int mask = 0; mask < (1 << size); mask++) {
-        vector<int> op;
-        int sum = 0;
-
-        for (int i = 0; i < size; i++) {
-            if (mask & (1 << i)) {
-                op.push_back(1);
-            } else {
-                op.push_back(-1);
-            }
+void dfs(const vector<int>& numbers, const int& target, const int& sum, const int& index) {
+    if (index == numbers.size()) {
+        if (sum == target) {
+            answer++;
         }
-
-        for (int i = 0; i < size; i++) {
-            sum += op[i] * numbers[i];
-        }
-
-        if (sum == target) answer++;
+        return;
     }
+
+    dfs(numbers, target, sum + numbers[index], index + 1);
+    dfs(numbers, target, sum - numbers[index], index + 1);
+}
+
+int solution(vector<int> numbers, int target) {
+    
+    dfs(numbers, target, 0, 0);
 
     return answer;
 }
