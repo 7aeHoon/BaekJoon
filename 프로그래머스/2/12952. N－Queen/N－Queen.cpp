@@ -3,58 +3,42 @@
 using namespace std;
 
 int answer;
-int dy[8] = {-1, -1, 0, 1, 1, 1, 0, -1};
-int dx[8] = {0, 1, 1, 1, 0, -1, -1, -1};
 
-bool checkQueen(const int& y, const int& x, const int& n, const vector<vector<bool>>& visited) {
-    // 8가지의 방향
-    for (int dir = 0; dir < 8; dir++) {
-        // 현재 방향에서 다음 좌표
-        int ny = y + dy[dir];
-        int nx = x + dx[dir];
-        while (0 <= ny && ny < n && 0 <= nx && nx < n) {
-            // 퀸이 이미 존재할 경우
-            if (visited[ny][nx] == 1) return false;
-            // (y, x) 좌표 증가
-            ny += dy[dir];
-            nx += dx[dir];
-        }
+bool check(int row, const vector<int>& queen) {
+    // 이전 행들과 현재 행을 비교하면서 검사
+    for(int i = 0; i < row; i++) {
+        // 등장한 열이 같은 경우: 수직 검사
+        if(queen[i] == queen[row]) return false;
+        // 행의 차이가 열의 차이와 같은 경우: 대각선 검사
+        if((row - i) == abs(queen[row] - queen[i])) return false;
     }
-
+    
     return true;
 }
 
-void dfs(const int& n, const int& currentRow, vector<vector<int>>& chessBoard, vector<vector<bool>>& visited) {
-    // 모든 퀸을 정상적으로 배치했을 경우
-    if (currentRow == n) {
+void dfs(int row, int n, vector<int>& queen) {
+    // 모든 행을 다 탐색
+    if(row == n) {
         answer++;
         return;
     }
-
-    // 현재 행(currentRow) 기준 전체 열을 조회
-    // 퀸을 배치할 수 있으면 퀸 배치
-    for (int x = 0; x < n; x++) {
-        if (checkQueen(currentRow, x, n, visited)) {
-            // 퀸 배치 및 방문 처리
-            chessBoard[currentRow][x] = 1;
-            visited[currentRow][x] = true;
-            // 다음 행 퀸 배치
-            dfs(n, currentRow + 1, chessBoard, visited);
-            // 퀸 원복과 방문 처리 원복
-            visited[currentRow][x] = false;
-            chessBoard[currentRow][x] = 0;
+    
+    // 현재 행에 대하여 모든 열에 퀸을 놓아보기
+    for(int col = 0; col < n; col++) {
+        // 퀸이 row, col에 배치 됨
+        queen[row] = col;
+        
+        if(check(row, queen)) {
+            // 다음 행 퀸 배치 탐색
+            dfs(row + 1, n, queen);
         }
     }
 }
 
 int solution(int n) {
-    // 1: 퀸 존재,  0: 빈 공간
-    vector<vector<int>> chessBoard(n, vector<int>(n, 0));
-    // 방문 배열
-    vector<vector<bool>> visited(n, vector<bool>(n, false));
-
-    // 0 번째 행부터 시작
-    dfs(n, 0, chessBoard, visited);
-
+    vector<int> queen(n);
+    
+    dfs(0, n, queen);
+    
     return answer;
 }
