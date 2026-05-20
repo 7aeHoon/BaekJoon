@@ -2,25 +2,23 @@
 
 using namespace std;
 
-int maxCnt = INT_MIN;
-
-void dfs(const int& remainHP, vector<vector<int>> &dungeons, vector<bool>& visited, const int& cnt) {
-    maxCnt = max(maxCnt, cnt);
-
-    for (int i = 0; i < dungeons.size(); i++) {
-        if (remainHP < dungeons[i][0] || visited[i]) continue;
-
-        visited[i] = true;
-        dfs(remainHP - dungeons[i][1], dungeons, visited, cnt + 1);
-        visited[i] = false;
-    }
-}
-
-// 던전 방문 순서에 따라 결과가 달라짐
 int solution(int k, vector<vector<int>> dungeons) {
-    vector<bool> visited(dungeons.size(), false);
-
-    dfs(k, dungeons, visited, 0);
-
-    return maxCnt;
+    int answer = -1;
+    
+    sort(dungeons.begin(), dungeons.end());
+    
+    do {
+        int remainHP = k;
+        int cnt = 0;
+        
+        for(const vector<int>& dungeon: dungeons) {
+            if(remainHP < dungeon[0]) continue;
+            remainHP -= dungeon[1];
+            cnt++;
+        }
+        
+        answer = max(answer, cnt);
+    } while(next_permutation(dungeons.begin(), dungeons.end()));
+    
+    return answer;
 }
