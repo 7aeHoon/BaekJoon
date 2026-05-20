@@ -2,66 +2,85 @@
 
 using namespace std;
 
-int n, m, groupNum = 1;
 int dy[4] = {-1, 0, 1, 0};
 int dx[4] = {0, 1, 0, -1};
-unordered_map<int, int> amount;
-int landGroup[501][501];
-bool visited[501][501];
 
-void bfs(const int& y, const int& x, const int& groupNum, const vector<vector<int>>& land) {
-    int cnt = 1;
+int bfs(int y, int x, int groupId, const vector<vector<int>>& land, vector<vector<int>>& visited) {
+    int result = 0;
+    int n = land.size();
+    int m = land[0].size();
     queue<pair<int, int>> q;
-
+    
     q.push({y, x});
-    visited[y][x] = true;
-
-    while (!q.empty()) {
+    visited[y][x] = groupId;
+    
+    while(!q.empty()) {
         auto [y, x] = q.front();
         q.pop();
-
-        landGroup[y][x] = groupNum;
-
-        for (int i = 0; i < 4; i++) {
+        
+        result++;
+        
+        for(int i = 0; i < 4; i++) {
             int ny = y + dy[i];
             int nx = x + dx[i];
-
-            if (ny < 0 || ny >= n || nx < 0 || nx >= m) continue;
-            if (land[ny][nx] == 0 || visited[ny][nx]) continue;
-            q.push({ny, nx});
-            visited[ny][nx] = true;
-            cnt++;
+            
+            if(ny < 0 || ny >= n || nx < 0 || nx >= m) continue;
+            if(land[ny][nx] == 0 ||visited[ny][nx] != 0) continue;
+            
+            q.push({ny ,nx});
+            visited[ny][nx] = groupId;
         }
     }
-
-    amount[groupNum] = cnt;
+    
+    return result;
 }
 
 int solution(vector<vector<int>> land) {
     int answer = 0;
-    n = land.size();
-    m = land[0].size();
+    
+    // 가로 및 세로 사이즈
+    int n = land.size();
+    int m = land[0].size();
+    
+    // 그룹(방문) 처리 벡터
 
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < m; j++) {
-            if (land[i][j] == 1 && !visited[i][j]) {
-                bfs(i, j, groupNum, land);
-                groupNum++;
+    vector<vector<int>> visited(n, vector<int>(m, 0));
+    
+    // 각 그룹에서 발견된 석유
+    unordered_map<int, int> oil;
+    
+    // 그룹 아이디
+    // 그룹은 1번부터 시작
+    int id = 1;
+    
+    for(int y = 0; y < n; y++) {
+        for(int x = 0; x < m; x++) {
+            // 그룹 부여가 되지 않은 석유 덩어리
+            if(land[y][x] == 1 && visited[y][x] == 0) {
+                // 해당 그룹에서 뽑은 석유 사이즈
+                int oilSize = bfs(y, x, id, land, visited);
+                // 그룹 : 추출한 석유 크기
+                oil[id] = oilSize;
+                id++;
             }
         }
     }
-
-    for (int x = 0; x < m; x++) {
-        int totalAmount = 0;
-        unordered_set<int> check;
-        for (int y = 0; y < n; y++) {
-            if (check.count(landGroup[y][x]) == 0) {
-                totalAmount += amount[landGroup[y][x]];
-                check.insert(landGroup[y][x]);
-            }
+    
+    for(int x = 0; x < m; x++) {
+        int totalOil = 0;
+        
+        unordered_set<int> usedGroupId;
+        
+        for(int y = 0; y < n; y++) {
+            int groupId = visited[y][x];
+            if(groupId == 0) continue;
+            if(usedGroupId.count(groupId)) continue;
+            usedGroupId.insert(groupId);
+            totalOil += oil[groupId];
         }
-        answer = max(answer, totalAmount);
+        
+        answer = max(answer, totalOil);
     }
-
+    
     return answer;
 }
