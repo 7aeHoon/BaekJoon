@@ -4,61 +4,49 @@ using namespace std;
 
 int solution(vector<vector<string>> relation) {
     int answer = 0;
-
-    // 행 개수
+    // 튜플 수
     int n = relation.size();
-
-    // 컬럼 개수
+    // 컬럼 수
     int m = relation[0].size();
-
-    // 후보키 mask 저장
+    
+    // 후보키 등록 벡터
     vector<int> candidateKeys;
-
-    // 모든 컬럼 조합 탐색
-    for (int mask = 1; mask < (1 << m); mask++) {
-
-        // -------------------------
-        // 최소성 검사
-        // -------------------------
+    
+    for(int mask = 1; mask < (1 << m); mask++) {
+        // 최소성 만족 여부
         bool isMinimal = true;
-
-        for (const int& key : candidateKeys) {
-
-            // 이미 존재하는 후보키가 부분집합이면 실패
-            if ((key & mask) == key) {
+        
+        for(const int& key: candidateKeys) {
+            // 기존 key의 부분집합일 경우
+            if((mask & key) == key) {
                 isMinimal = false;
                 break;
             }
         }
-
-        if (!isMinimal) continue;
-
-        // -------------------------
-        // 유일성 검사
-        // -------------------------
-        set<vector<string>> s;
-
-        for (int i = 0; i < n; i++) {
-
-            vector<string> tuple;
-
-            for (int j = 0; j < m; j++) {
-
-                // 현재 조합에 포함된 컬럼
-                if (mask & (1 << j)) {
-                    tuple.push_back(relation[i][j]);
+        
+        // 최소성을 만족하지 않는 컬럼 조합일 경우
+        if(!isMinimal) continue;
+        
+        set<string> s;
+        
+        for(int row = 0; row < n; row++) {
+            string tuple = "";
+            
+            for(int col = 0; col < m; col++) {
+                if(mask & (1 << col)) {
+                    tuple += relation[row][col] + ',';
                 }
             }
-
+            
             s.insert(tuple);
         }
-
-        // 모든 튜플이 서로 다름
-        if (s.size() == n) {
+        
+        if(s.size() == n) {
             candidateKeys.push_back(mask);
-            answer++;
         }
     }
-
+    
+    answer = candidateKeys.size();
+    
     return answer;
 }
