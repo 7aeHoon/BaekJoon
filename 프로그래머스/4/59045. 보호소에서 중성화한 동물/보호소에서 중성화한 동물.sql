@@ -3,11 +3,11 @@
 -- 아이디 순으로 조회하는 SQL 문을 작성해주세요.
 
 SELECT 
-    ai.animal_id,
-    ai.animal_type,
+    ai.animal_id, 
+    ai.animal_type, 
     ai.name
 FROM animal_ins ai
-    JOIN animal_outs ao
+    JOIN animal_outs ao 
         ON ai.animal_id = ao.animal_id
-WHERE ai.sex_upon_intake LIKE 'Intact%' AND (ao.sex_upon_outcome LIKE 'Spayed%' OR ao.sex_upon_outcome LIKE 'Neutered%')
+WHERE ai.sex_upon_intake != ao.sex_upon_outcome
 ORDER BY ai.animal_id;
