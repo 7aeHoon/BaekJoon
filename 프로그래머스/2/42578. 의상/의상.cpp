@@ -1,28 +1,30 @@
-#include <algorithm>
-#include <iostream>
-#include <map>
-#include <string>
-#include <vector>
+#include <bits/stdc++.h>
 
 using namespace std;
 
 int solution(vector<vector<string>> clothes) {
-    long long answer = 1;
+    int answer = 1;
 
-    map<string, int> m;
+    unordered_map<string, int> um;
 
-    // 코니가 가진 옷을 조회
-    for(const vector<string> &cloth : clothes) {
-        // 해당 옷의 종류 수를 증가
-        m[cloth[1]]++;
+    for (const vector<string>& clothe : clothes) {
+        // 옷의 종류
+        string type = clothe[1];
+
+        // 만약 처음 등장하는 옷의 종류일 경우
+        if (um[type] == 0) {
+            um[type] = 1;
+        }
+
+        // 옷의 종류에 대한 개수 증가
+        um[type]++;
     }
 
-    // 의상의 종류에 대하여 옷의 수 + 1(안 입는 경우)
-    for(const auto& cloth : m) {
-        answer *= (cloth.second + 1);
+    for (const auto& p : um) {
+        answer *= p.second;
     }
 
-    // 모두 안 입는 경우의 수 제거
+    // 아무것도 입지 않았을 때 제외
     answer--;
 
     return answer;
