@@ -1,26 +1,31 @@
-#include <bits/stdc++.h>
+#include <string>
+#include <vector>
+#include <algorithm>
 
 using namespace std;
 
-bool cmp(const string& l, const string& r) { return l + r > r + l; }
-
 string solution(vector<int> numbers) {
-    string answer = "";
+    vector<string> nums;
 
-    vector<string> v;
-
-    for (const auto& num : numbers) {
-        v.push_back(to_string(num));
+    for (int number : numbers) {
+        nums.push_back(to_string(number));
     }
 
-    sort(v.begin(), v.end(), cmp);
+    sort(nums.begin(), nums.end(),
+         [](const string& a, const string& b) {
+             return a + b > b + a;
+         });
 
-    for (const auto& num : v) {
-        if (answer.empty() && num == "0") continue;
+    // 모두 0인 경우 "000..." 대신 "0" 반환
+    if (nums[0] == "0") {
+        return "0";
+    }
+
+    string answer;
+
+    for (const string& num : nums) {
         answer += num;
     }
-
-    if (answer.empty()) answer = "0";
 
     return answer;
 }
