@@ -2,53 +2,46 @@
 
 using namespace std;
 
-bool dfs(
-    const string& current,
-    int total,
-    map<string, set<string>>& fly,
-    map<pair<string, string>, int>& remain,
-    vector<string>& path
-) {
-    // 티켓 N장을 사용하면 방문 공항은 N + 1개
-    if (path.size() == total + 1) {
+bool dfs(const string& current, const vector<vector<string>>& tickets, vector<bool>& visited, vector<string> &answer) {
+    // 기저사례
+    // 티켓을 전부 사용했을 경우
+    if (answer.size() == tickets.size() + 1) {
         return true;
     }
 
-    for (const string& to : fly[current]) {
-        pair<string, string> key = {current, to};
-
-        if (remain[key] == 0) continue;
-
-        remain[key]--;
-        path.push_back(to);
-
-        if (dfs(to, total, fly, remain, path)) {
-            return true;
+    // 티켓 조회
+    for (int i = 0; i < tickets.size(); i++) {
+        // 현재 공항에서 출발하는 티켓이며, 아직 사용하지 않았을 경우
+        if (current == tickets[i][0] && !visited[i]) {
+            // 현재 티켓을 사용처리
+            visited[i] = true;
+            answer.push_back(tickets[i][1]);
+            // 재귀 수행
+            if(dfs(tickets[i][1], tickets, visited, answer)) {
+                return true;
+            }
+            answer.pop_back();
+            // 현재 티켓을 원복처리
+            visited[i] = false;
         }
-
-        // 모든 티켓을 사용하지 못했다면 복구
-        path.pop_back();
-        remain[key]++;
     }
 
     return false;
 }
 
 vector<string> solution(vector<vector<string>> tickets) {
-    map<string, set<string>> fly;
-    map<pair<string, string>, int> remain;
+    vector<string> answer;
+    // 티켓 사용여부 체크
+    vector<bool> visited(tickets.size(), false);
 
-    for (const auto& ticket : tickets) {
-        const string& from = ticket[0];
-        const string& to = ticket[1];
+    // 티켓을 사전에 오름차순으로 정렬
+    // 가장 먼저 나오는 정답이 알파벳 순서가 앞서는 경로
+    sort(tickets.begin(), tickets.end());
 
-        fly[from].insert(to);
-        remain[{from, to}]++;
-    }
+    // "ICN"에서 먼저 출발
+    answer.push_back("ICN");
 
-    vector<string> answer = {"ICN"};
-
-    dfs("ICN", tickets.size(), fly, remain, answer);
+    dfs("ICN", tickets, visited, answer);
 
     return answer;
 }
