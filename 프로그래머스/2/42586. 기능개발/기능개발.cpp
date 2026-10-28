@@ -1,41 +1,24 @@
-#include <bits/stdc++.h>
+#include <vector>
 
 using namespace std;
 
 vector<int> solution(vector<int> progresses, vector<int> speeds) {
     vector<int> answer;
 
-    queue<int> due;
+    int deployDay = 0;
 
     for (int i = 0; i < progresses.size(); i++) {
-        // 현재 완료된 작업량
-        int progress = progresses[i];
-        // 기능 개발 속도
-        int speed = speeds[i];
-        // 남은 작업량
-        int remainProgress = 100 - progress;
-        // 배포까지 걸리는 시간
-        int days = remainProgress / speed;
+        int remaining = 100 - progresses[i];
+        int days = (remaining + speeds[i] - 1) / speeds[i];
 
-        if (remainProgress % speed != 0) {
-            days++;
+        if (days > deployDay) {
+            // 기존 배포에 포함할 수 없으므로 새 배포 시작
+            deployDay = days;
+            answer.push_back(1);
+        } else {
+            // 앞 작업과 함께 배포
+            answer.back()++;
         }
-
-        due.push(days);
-    }
-
-    while (!due.empty()) {
-        int cnt = 1;
-        int current = due.front();
-
-        due.pop();
-
-        while (!due.empty() && current >= due.front()) {
-            cnt++;
-            due.pop();
-        }
-
-        answer.push_back(cnt);
     }
 
     return answer;
