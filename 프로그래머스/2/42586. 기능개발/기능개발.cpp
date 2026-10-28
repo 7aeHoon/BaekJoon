@@ -1,33 +1,38 @@
-#include <algorithm>
-#include <iostream>
-#include <queue>
-#include <string>
-#include <vector>
+#include <bits/stdc++.h>
 
 using namespace std;
 
 vector<int> solution(vector<int> progresses, vector<int> speeds) {
     vector<int> answer;
-    queue<int> q;
+
+    queue<int> due;
 
     for (int i = 0; i < progresses.size(); i++) {
+        // 현재 완료된 작업량
+        int progress = progresses[i];
+        // 기능 개발 속도
+        int speed = speeds[i];
         // 남은 작업량
-        int remainProgress = 100 - progresses[i];
-        // 소요 날
-        int days = (remainProgress % speeds[i] == 0) ? (remainProgress / speeds[i]) : (remainProgress / speeds[i]) + 1;
-        // 큐에 소요 날 추가
-        q.push(days);
+        int remainProgress = 100 - progress;
+        // 배포까지 걸리는 시간
+        int days = remainProgress / speed;
+
+        if (remainProgress % speed != 0) {
+            days++;
+        }
+
+        due.push(days);
     }
 
-   while(!q.empty()) {
+    while (!due.empty()) {
         int cnt = 1;
-        int cur = q.front();
-        
-        q.pop();
+        int current = due.front();
 
-        while(cur >= q.front() && !q.empty()) {
-            q.pop();
+        due.pop();
+
+        while (!due.empty() && current >= due.front()) {
             cnt++;
+            due.pop();
         }
 
         answer.push_back(cnt);
