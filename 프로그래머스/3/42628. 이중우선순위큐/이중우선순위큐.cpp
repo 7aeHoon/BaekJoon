@@ -2,61 +2,41 @@
 
 using namespace std;
 
-priority_queue<int> pq;
-int _max, _min;
-
-vector<string> split(string input, string delimiter) {
-    vector<string> ret;
-    string token = "";
-    long long pos = 0;
-    while ((pos = input.find(delimiter)) != string::npos) {
-        token = input.substr(0, pos);
-        ret.push_back(token);
-        input.erase(0, pos + delimiter.size());
-    }
-    ret.push_back(input);
-    return ret;
-}
-
 vector<int> solution(vector<string> operations) {
     vector<int> answer;
 
-    for (int i = 0; i < operations.size(); i++) {
-        vector<string> v = split(operations[i], " ");
+    multiset<int> ms;
 
-        if (v[0] == "I") {
-            pq.push(stoi(v[1]));
-        } else {
-            if (v[1] == "1" && !pq.empty()) {
-                pq.pop();
+    for (const string& operation : operations) {
+        string cmd;
+        int num;
+
+        istringstream ss(operation);
+
+        ss >> cmd >> num;
+
+        // 큐에서 삭제
+        if (cmd == "D" && !ms.empty()) {
+            // 최댓값을 삭제
+            if (num == 1) {
+                ms.erase(prev(ms.end()));
             }
-            if (v[1] == "-1" && !pq.empty()) {
-                priority_queue<int> tempPQ;
-                while (pq.size() > 1) {
-                    tempPQ.push(pq.top());
-                    pq.pop();
-                }
-                pq = tempPQ;
+            // 최솟값을 삭제
+            else {
+                ms.erase(ms.begin());
             }
+        }
+        // 큐에 주어진 숫자를 삽입
+        else if (cmd == "I") {
+            ms.insert(num);
         }
     }
 
-    cout << pq.size() << endl;
-
-    if (pq.size() == 0) {
-        _max = _min = 0;
-    } else if (pq.size() == 1) {
-        _max = _min = pq.top();
-    } else if (pq.size() >= 2) {
-        _max = pq.top();
-        while (pq.size() != 1) {
-            pq.pop();
-        }
-        _min = pq.top();
+    if (ms.empty()) {
+        return {0, 0};
     }
 
-    answer.push_back(_max);
-    answer.push_back(_min);
+    answer = {*ms.rbegin(), *ms.begin()};
 
     return answer;
 }
