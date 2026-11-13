@@ -1,78 +1,62 @@
-#include <bits/stdc++.h>
+#include <algorithm>
+#include <queue>
+#include <tuple>
+#include <vector>
 
 using namespace std;
 
-struct Job {
-    int id;
-    int request;
-    int duration;
+struct Process {
+    int runningTime; // 작업 소요 시간
+    int enterTime;   // 작업 요청 시각
+    int num;         // 입력에서의 작업 번호
 };
 
-struct PqCompare {
-    bool operator()(const Job& l, const Job& r) const {
-        // 소요 시간이 짧은 작업 우선
-        if (l.duration != r.duration) {
-            return l.duration > r.duration;
-        }
-
-        // 요청 시각이 빠른 작업 우선
-        if (l.request != r.request) {
-            return l.request > r.request;
-        }
-
-        // 작업 번호가 작은 작업 우선
-        return l.id > r.id;
+struct Compare {
+    bool operator()(const Process& a, const Process& b) const {
+        // 소요 시간, 요청 시각, 작업 번호가 작은 순서로 우선 처리
+        return tie(a.runningTime, a.enterTime, a.num)
+             > tie(b.runningTime, b.enterTime, b.num);
     }
 };
-
-bool compareRequest(const Job& l, const Job& r) {
-    // 작업의 요청 시각을 기준으로 오름차순
-    return l.request < r.request;
-}
 
 int solution(vector<vector<int>> jobs) {
-    int answer = 0;
-    // 현재 시점
+    int n = static_cast<int>(jobs.size());
+    vector<Process> processes;
+    processes.reserve(n);
+
+    for (int i = 0; i < n; ++i) {
+        processes.push_back({jobs[i][1], jobs[i][0], i});
+    }
+
+    sort(processes.begin(), processes.end(),
+         [](const Process& a, const Process& b) {
+             return a.enterTime < b.enterTime;
+         });
+
+    priority_queue<Process, vector<Process>, Compare> pq;
+
+    int nextJob = 0;
     int currentTime = 0;
-    // 마지막 처리 작업 인덱스
-    int latestJobIndex = 0;
+    long long totalTurnaroundTime = 0;
 
-    // 모든 작업 목록
-    vector<Job> totalJobs;
-
-    for (int i = 0; i < jobs.size(); i++) {
-        totalJobs.push_back({i, jobs[i][0], jobs[i][1]});
-    }
-
-    sort(totalJobs.begin(), totalJobs.end(), compareRequest);
-
-    // 대기 큐
-    priority_queue<Job, vector<Job>, PqCompare> watingJobs;
-
-    // 대기 큐가 비어있지 않거나 작업이 비어있지 않았을 경우
-    while (latestJobIndex < totalJobs.size() || !watingJobs.empty()) {
-        
-        // 작업에서 대기 큐로 가져오기
-        while (latestJobIndex < totalJobs.size() && totalJobs[latestJobIndex].request <= currentTime) {
-            watingJobs.push(totalJobs[latestJobIndex]);
-            latestJobIndex++;
+    while (nextJob < n || !pq.empty()) {
+        // 대기열이 비어 있으면 다음 요청 시각까지 이동
+        if (pq.empty()) {
+            currentTime = max(currentTime, processes[nextJob].enterTime);
         }
 
-        // 대기 큐에서 작업을 하나 꺼내서 수행하기
-        if (!watingJobs.empty()) {
-            // 하드 디스크가 수행할 작업
-            Job currentJob = watingJobs.top();
-            watingJobs.pop();
-
-            // 해당 작업의 소요시간만큼 현재 시간에 누적
-            currentTime += currentJob.duration;
-            // 반환 시간 계산
-            answer += currentTime - currentJob.request;
-        } else {
-            // 대기 큐에 작업이 없으니, 다음 작업으로 현재 시간 이동
-            currentTime = totalJobs[latestJobIndex].request;
+        // 현재 시각까지 도착한 작업을 모두 대기열에 추가
+        while (nextJob < n && processes[nextJob].enterTime <= currentTime) {
+            pq.push(processes[nextJob]);
+            ++nextJob;
         }
+
+        Process current = pq.top();
+        pq.pop();
+
+        currentTime += current.runningTime;
+        totalTurnaroundTime += currentTime - current.enterTime;
     }
 
-    return answer / jobs.size();
+    return static_cast<int>(totalTurnaroundTime / n);
 }
