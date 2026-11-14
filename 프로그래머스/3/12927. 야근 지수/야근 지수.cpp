@@ -5,36 +5,36 @@ using namespace std;
 long long solution(int n, vector<int> works) {
     long long answer = 0;
 
-    // 남은 작업량을 저장할 우선순위 큐
     priority_queue<int> pq;
 
-    // 남은 작업량의 총합
-    int sum = 0;
-
-    for (const int& work : works) {
+    for (const auto& work : works) {
         pq.push(work);
-        sum += work;
-    }
-
-    // 남은 작업량을 모두 처리할 수 있을 경우
-    if (sum <= n) {
-        return 0;
     }
 
     for (int i = 0; i < n; i++) {
-        // 가장 오래 걸리는 작업
-        int work = pq.top();
+        // 남은 일이 없다면 종료
+        if (pq.empty()) break;
+
+        // 가장 많이 남은 일
+        int currentMaxWork = pq.top();
         pq.pop();
-        // 작업이 아직 남아있다면
-        if (work - 1 != 0) {
-            pq.push(work - 1);
+
+        // 1시간 동안 작업 수행
+        currentMaxWork--;
+
+        if (currentMaxWork != 0) {
+            // 다시 작업 큐에 넣기
+            pq.push(currentMaxWork);
         }
     }
 
     while (!pq.empty()) {
-        int work = pq.top();
+        // 남아있는 일
+        int remainWork = pq.top();
         pq.pop();
-        answer += work * work;
+
+        // 피로도 누적
+        answer += remainWork * remainWork;
     }
 
     return answer;
