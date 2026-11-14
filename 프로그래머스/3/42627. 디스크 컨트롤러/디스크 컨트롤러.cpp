@@ -1,62 +1,64 @@
-#include <algorithm>
-#include <queue>
-#include <tuple>
-#include <vector>
+#include <bits/stdc++.h>
 
 using namespace std;
 
-struct Process {
-    int runningTime; // 작업 소요 시간
-    int enterTime;   // 작업 요청 시각
-    int num;         // 입력에서의 작업 번호
-};
-
-struct Compare {
-    bool operator()(const Process& a, const Process& b) const {
-        // 소요 시간, 요청 시각, 작업 번호가 작은 순서로 우선 처리
-        return tie(a.runningTime, a.enterTime, a.num)
-             > tie(b.runningTime, b.enterTime, b.num);
-    }
-};
-
+// (요청 시각, 소요 시간)
 int solution(vector<vector<int>> jobs) {
-    int n = static_cast<int>(jobs.size());
-    vector<Process> processes;
-    processes.reserve(n);
-
-    for (int i = 0; i < n; ++i) {
-        processes.push_back({jobs[i][1], jobs[i][0], i});
-    }
-
-    sort(processes.begin(), processes.end(),
-         [](const Process& a, const Process& b) {
-             return a.enterTime < b.enterTime;
-         });
-
-    priority_queue<Process, vector<Process>, Compare> pq;
-
-    int nextJob = 0;
+    int answer = 0;
+    // 모든 작업의 반환 시간 합계
+    int totalTurnaroundTime = 0;
+    // 전체 작업의 수
+    int n = jobs.size();
+    // 현재 시간
     int currentTime = 0;
-    long long totalTurnaroundTime = 0;
 
-    while (nextJob < n || !pq.empty()) {
-        // 대기열이 비어 있으면 다음 요청 시각까지 이동
-        if (pq.empty()) {
-            currentTime = max(currentTime, processes[nextJob].enterTime);
-        }
+    // (요청 시각, 소요 시간, 작업 번호)
+    vector<tuple<int, int, int>> processes;
 
-        // 현재 시각까지 도착한 작업을 모두 대기열에 추가
-        while (nextJob < n && processes[nextJob].enterTime <= currentTime) {
-            pq.push(processes[nextJob]);
-            ++nextJob;
-        }
-
-        Process current = pq.top();
-        pq.pop();
-
-        currentTime += current.runningTime;
-        totalTurnaroundTime += currentTime - current.enterTime;
+    // 벡터에 저장
+    for (int i = 0; i < n; i++) {
+        processes.push_back({jobs[i][0], jobs[i][1], i});
     }
 
-    return static_cast<int>(totalTurnaroundTime / n);
+    // 요청 시각을 기준으로 정렬
+    sort(processes.begin(), processes.end());
+
+    // 현재 시점보다 이전에 요청 받은 작업을 저장할 큐
+    queue<tuple<int, int, int>> pending;
+
+    // 정렬된 작업을 큐에 저장
+    for (int i = 0; i < n; i++) {
+        pending.push(processes[i]);
+    }
+
+    // 작업을 처리할 디스크 컨트롤러(소요 시간, 요청 시각, 작업 번호)
+    priority_queue<tuple<int, int, int>,  vector<tuple<int, int, int>>, greater<tuple<int, int, int>>> diskController;
+
+    // 작업이 아직 남았을 경우
+    while (!pending.empty() || !diskController.empty()) {
+        if (diskController.empty()) {
+            currentTime = max(currentTime, get<0>(pending.front()));
+        }
+
+        // 현재 시점보다 먼저 들어온 작업일 경우
+        while (!pending.empty() && get<0>(pending.front()) <= currentTime) {
+            auto [enterTime, runningTime, jobId] = pending.front();
+            pending.pop();
+            // 디스크 컨트롤러에 저장
+            diskController.push({runningTime, enterTime, jobId});
+        }
+
+        // 우선으로 처리할 작업 꺼내기
+        auto [runningTime, enterTime, jobId] = diskController.top();
+        diskController.pop();
+
+        // 작업 처리
+        currentTime += runningTime;
+        totalTurnaroundTime += currentTime - enterTime;
+    }
+
+    // 모든 작업의 평균 반환 시간 계산
+    answer = totalTurnaroundTime / n;
+
+    return answer;
 }
